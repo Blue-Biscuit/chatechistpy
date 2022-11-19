@@ -100,7 +100,24 @@ def helpCommand(args: list[str], passages: list[Passage.Passage]):
     print()
 
 def learnCommand(args: list[str], passages: list[Passage.Passage]):
-    pass
+    """Plays a game with the selected passage."""
+
+    # ALGORITHM:
+    # 1. Input parse. If input wasn't sufficient, error and exit.
+    # 2. Run the game until it has been completed (a fully blank passage has
+    # been repeated.)
+
+    # 1. Input parse. If input wasn't sufficient, error and exit.
+
+    # If no args are given, print usage data.
+    if len(args) == 1:
+        print("usage: learn <title | id>")
+        print()
+        return
+
+
+    # 2. Run the game until it has been completed (a fully blank passage has
+    # been repeated.)
 
 COMMANDS = {
     "new" : {
