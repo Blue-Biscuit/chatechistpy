@@ -99,6 +99,9 @@ def helpCommand(args: list[str], passages: list[Passage.Passage]):
         print(f"{x}\t\t{COMMANDS[x]['help']}")
     print()
 
+def learnCommand(args: list[str], passages: list[Passage.Passage]):
+    pass
+
 COMMANDS = {
     "new" : {
         "help" : "creates a new passage.",
@@ -111,6 +114,10 @@ COMMANDS = {
     "list" : {
         "help" : "lists passages.",
         "method" : listCommand
+    },
+    "learn" : {
+        "help" : "plays a memorization game with the provided passage.",
+        "method" : learnCommand
     },
     "exit" : {
         "help" : "exits the program.",
