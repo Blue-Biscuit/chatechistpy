@@ -1,5 +1,6 @@
 import Passage
 import helpers
+import random
 
 def getPassage(passages: list[Passage.Passage], args: list[str], selectionArgLoc: int) -> Passage.Passage | None:
     """Gets a passage based on id (if the string is int-parsable) or name."""
@@ -137,6 +138,27 @@ def learnCommand(args: list[str], passages: list[Passage.Passage]):
     blanks = []
     for ignored in p:
         blanks.append(False)
+    
+    def fullyBlanked(b: list[bool]):
+        """Helper internal method to check if the boolean list is all true."""
+        for x in b:
+            if not x:
+                return False
+        
+        return True
+    
+    def blankRandom(b: list[bool]):
+        """Blanks a random word in the boolean list."""
+
+        if fullyBlanked(b):
+            return
+
+        updated = False
+        while not updated:
+            i = random.choice(range(0, len(b)))
+            if not b[i]:
+                b[i] = True
+                updated = True
 
     while not done:
         # ALGORITHM:
@@ -159,11 +181,32 @@ def learnCommand(args: list[str], passages: list[Passage.Passage]):
         print()
 
         # 2. Get user input.
+
+        i = input(">>> ")
+
+        if i == 'exit':
+            break
+
+        compareResult = p.compare(i)
+
         # 3. If the input was correct and the passage is entirely blanks, complete.
+
+        if compareResult == (Passage.Passage.MATCH, Passage.Passage.MATCH) and fullyBlanked(blanks):
+            print("Correct!")
+            done = True
+
         # 4. If the input was otherwise correct, blank a random word and continue.
+
+        elif compareResult == (Passage.Passage.MATCH, Passage.Passage.MATCH):
+            print("Correct!")
+            blankRandom(blanks)
+            print()
+
         # 5. If the user was incorrect, continue.
 
-        done = True
+        else:
+            print("Sorry, that was incorrect.")
+            print()
 
 
 COMMANDS = {
