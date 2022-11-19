@@ -6,7 +6,7 @@
 #       Andrew Huffman
 ################################################################################
 
-
+import json
 
 class Passage:
     """A passage to be memorized."""
@@ -93,7 +93,19 @@ class Passage:
         
         return (Passage.MATCH, Passage.MATCH)
     
+    def toJSON(self) -> str:
+        """Creates a JSON string from the Passage instance."""
+
+        return json.dumps(self, default=lambda o: o.__dict__)
+    
+    def fromDict(d: dict):
+        """Builds a passage from a dictionary."""
+
+        return Passage(d['title'], d['_text'], d['id'], d['tagIDs'])
+    
+    def fromJSON(j: str):
+        return Passage.fromDict(json.loads(j))
+
     def _makePassage(text: str) -> list[str]:
         """Splits a string into a list of words."""
         return text.split(None)
-    
