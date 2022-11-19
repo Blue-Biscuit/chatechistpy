@@ -216,6 +216,24 @@ def learnCommand(args: list[str], passages: list[Passage.Passage]):
         else:
             print("Sorry, that was incorrect.")
             print()
+
+            if compareResult[0] == Passage.Passage.INPUT_TOO_SHORT:
+                print('Input was too short.')
+                print()
+            elif compareResult[0] == Passage.Passage.INPUT_TOO_LONG:
+                print('Input was too long.')
+                print()
+            else:
+                wordNum = compareResult[0]
+                pin = Passage.Passage('', i, -1, [])
+
+                inWord = pin.getWord(wordNum)
+                word = p.getWord(wordNum)
+                print(f'Error at word {wordNum+1}, "{inWord}"')
+                print(f'Should have been "{word}"')
+                print()
+
+
             time.sleep(SECS_BETWEEN_TURNS)
             helpers.clearConsole()
 
