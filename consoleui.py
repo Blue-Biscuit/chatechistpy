@@ -1,6 +1,7 @@
 import Passage
 import helpers
 import random
+import time
 
 def getPassage(passages: list[Passage.Passage], args: list[str], selectionArgLoc: int) -> Passage.Passage | None:
     """Gets a passage based on id (if the string is int-parsable) or name."""
@@ -117,6 +118,9 @@ def learnCommand(args: list[str], passages: list[Passage.Passage]):
     # 2. Run the game until it has been completed (a fully blank passage has
     # been repeated.)
 
+    SECS_BETWEEN_TURNS = 3
+    """The number of seconds the program halts between turns."""
+
     # 1. Input parse. If input wasn't sufficient, error and exit.
 
     # If no args are given, print usage data.
@@ -130,6 +134,8 @@ def learnCommand(args: list[str], passages: list[Passage.Passage]):
         print(f'Passage "{helpers.joinAfter(args, 1)}" not found')
         print()
         return
+
+    helpers.clearConsole()
 
     # 2. Run the game until it has been completed (a fully blank passage has
     # been repeated.)
@@ -193,6 +199,7 @@ def learnCommand(args: list[str], passages: list[Passage.Passage]):
 
         if compareResult == (Passage.Passage.MATCH, Passage.Passage.MATCH) and fullyBlanked(blanks):
             print("Correct!")
+            print()
             done = True
 
         # 4. If the input was otherwise correct, blank a random word and continue.
@@ -201,12 +208,16 @@ def learnCommand(args: list[str], passages: list[Passage.Passage]):
             print("Correct!")
             blankRandom(blanks)
             print()
+            time.sleep(SECS_BETWEEN_TURNS)
+            helpers.clearConsole()
 
         # 5. If the user was incorrect, continue.
 
         else:
             print("Sorry, that was incorrect.")
             print()
+            time.sleep(SECS_BETWEEN_TURNS)
+            helpers.clearConsole()
 
 
 COMMANDS = {
