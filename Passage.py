@@ -21,8 +21,8 @@ class Passage:
     def __str__(self):
         return self.text
     
-    def __next__(self):
-        return next(self._passage)
+    def __iter__(self):
+        return iter(self._passage)
     
     @property
     def text(self) -> str:
