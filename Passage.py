@@ -105,6 +105,15 @@ class Passage:
     
     def fromJSON(j: str):
         return Passage.fromDict(json.loads(j))
+    
+    def fromJSONList(j: str) -> list:
+        l = json.loads(j)
+
+        result = []
+        for x in l:
+            result.append(Passage.fromDict(x))
+        
+        return result
 
     def _makePassage(text: str) -> list[str]:
         """Splits a string into a list of words."""

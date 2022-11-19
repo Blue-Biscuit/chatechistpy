@@ -275,6 +275,38 @@ def saveCommand(args: list[str], passages: list[Passage.Passage]):
     j += ']'
 
     f.write(j)
+    f.close()
+
+def loadCommand(args: list[str], passages: list[Passage.Passage]):
+    """Loads a list of passages from a file, and appends them to the current one."""
+
+    # ALGORITHM:
+    # 1. Check args for errors.
+    # 2. Append the contents of the list from the file to the current list.
+
+    # 1. Check args for errors.
+
+    if len(args) == 1:
+        print("Usage: load <path>")
+        print()
+        return
+    
+    filepath = args[1]
+    f = None
+    try:
+        f = open(filepath, 'r')
+    except:
+        print(f'Error opening "{filepath}" for reading.')
+        print()
+        return
+    
+    j = f.read()
+
+    # 2. Append the contents of the list from the file to the current list.
+
+    l = Passage.Passage.fromJSONList(j)
+    for x in l:
+        passages.append(x)
 
 COMMANDS = {
     "new" : {
@@ -296,6 +328,10 @@ COMMANDS = {
     "save" : {
         "help" : "saves the current passages list to a file.",
         "method" : saveCommand
+    },
+    "load" : {
+        "help" : "loads passages from a file.",
+        "method" : loadCommand
     },
     "exit" : {
         "help" : "exits the program.",
