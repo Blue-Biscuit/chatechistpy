@@ -21,13 +21,17 @@ class Passage:
     def __str__(self):
         return self.text
     
-    def __next__(self):
-        return next(self._passage)
+    def __iter__(self):
+        return iter(self._passage)
     
     @property
     def text(self) -> str:
         """The full text of the passage."""
         return self._text
+
+    def getWord(self, index: int):
+        """Gets the word at an index in the passage."""
+        return self._passage[index]
     
     MATCH = -1
     """Compare method return code for a match."""
@@ -36,7 +40,7 @@ class Passage:
     INPUT_TOO_LONG = -3
     """Compare method return code for len(input) < len(passage)."""
 
-    def compare(self, text) -> tuple[int,int]:
+    def compare(self, text: str) -> tuple[int,int]:
         """Compares the two strings, and returns (word of difference, char of
         difference). Uses the MATCH, INPUT_TOO_SHORT, and INPUT_TOO_LONG
         codes to flag these situations, where either the passed-in passage

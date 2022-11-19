@@ -6,6 +6,8 @@
 #       Andrew H
 ################################################################################
 
+import os
+
 def joinAfter(args: list[str], start: int) -> str:
     """Joins the strings in the list at and after the start value with a space."""
 
@@ -43,3 +45,6 @@ def firstWordIsInteger(x: str) -> bool:
         return True
     else:
         return False
+
+def clearConsole():
+    os.system('cls' if os.name == 'nt' else 'clear')
