@@ -135,10 +135,34 @@ def learnCommand(args: list[str], passages: list[Passage.Passage]):
 
     done = False
     blanks = []
-    for x in p:
+    for ignored in p:
         blanks.append(False)
 
     while not done:
+        # ALGORITHM:
+        # 1. Print a blanked string, representing the passage.
+        # 2. Get user input.
+        # 3. If the input was correct and the passage is entirely blanks, complete.
+        # 4. If the input was otherwise correct, blank a random word and continue.
+        # 5. If the user was incorrect, continue.
+
+        # 1. Print a blanked string, representing the passage.
+
+        for (word, blank) in zip(p, blanks):
+            if blank:
+                for ignored in word:
+                    print('_', end='')
+                print(' ', end='')
+            else:
+                print(word, end=' ')
+        print()
+        print()
+
+        # 2. Get user input.
+        # 3. If the input was correct and the passage is entirely blanks, complete.
+        # 4. If the input was otherwise correct, blank a random word and continue.
+        # 5. If the user was incorrect, continue.
+
         done = True
 
 
