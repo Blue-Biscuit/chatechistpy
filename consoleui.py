@@ -124,9 +124,23 @@ def learnCommand(args: list[str], passages: list[Passage.Passage]):
         print()
         return
 
+    p = getPassage(passages, args, 1)
+    if p == None:
+        print(f'Passage "{helpers.joinAfter(args, 1)}" not found')
+        print()
+        return
 
     # 2. Run the game until it has been completed (a fully blank passage has
     # been repeated.)
+
+    done = False
+    blanks = []
+    for x in p:
+        blanks.append(False)
+
+    while not done:
+        done = True
+
 
 COMMANDS = {
     "new" : {
