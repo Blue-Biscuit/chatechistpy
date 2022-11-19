@@ -28,6 +28,10 @@ class Passage:
     def text(self) -> str:
         """The full text of the passage."""
         return self._text
+
+    def getWord(self, index: int):
+        """Gets the word at an index in the passage."""
+        return self._passage[index]
     
     MATCH = -1
     """Compare method return code for a match."""
