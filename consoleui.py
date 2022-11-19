@@ -81,20 +81,7 @@ def printCommand(args: list[str], passages: list[Passage.Passage]):
     id: int
     title: str
 
-    try:
-        id = int(args[1])
-        isId = True
-    except:
-        title = helpers.joinAfter(args, 1)
-    
-    # Find the passage
-    p: Passage.Passage = None
-
-    for x in passages:
-        if isId and x.id == id:
-            p = x
-        elif not isId and x.title == title:
-            p = x
+    p = getPassage(passages, args, 1)
     
     # Print the passage if found
     if p == None:
