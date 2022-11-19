@@ -1,26 +1,27 @@
 import Passage
 import helpers
 
-def getPassage(passages: list[Passage.Passage], selection: str) -> Passage.Passage | None:
+def getPassage(passages: list[Passage.Passage], args: list[str], selectionArgLoc: int) -> Passage.Passage | None:
     """Gets a passage based on id (if the string is int-parsable) or name."""
 
     result = None
 
-    if helpers.isInt(str):
-        id = int(selection)
+    if helpers.isInt(args[selectionArgLoc]):
+        id = int(args[selectionArgLoc])
 
         for x in passages:
             if x.id == id:
                 result = x
                 break
     else:
+        title = helpers.joinAfter(args, selectionArgLoc)
+
         for x in passages:
-            if x.title == selection:
+            if x.title == title:
                 result = x
                 break
     
     return result
-
 
 def newCommand(args: list[str], passages: list[Passage.Passage]):
     done = False
