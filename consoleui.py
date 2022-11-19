@@ -216,6 +216,7 @@ def learnCommand(args: list[str], passages: list[Passage.Passage]):
         else:
             print("Sorry, that was incorrect.")
             print()
+
             if compareResult[0] == Passage.Passage.INPUT_TOO_SHORT:
                 print('Input was too short.')
                 print()
@@ -231,6 +232,7 @@ def learnCommand(args: list[str], passages: list[Passage.Passage]):
                 print(f'Error at word {wordNum+1}, "{inWord}"')
                 print(f'Should have been "{word}"')
                 print()
+
 
             time.sleep(SECS_BETWEEN_TURNS)
             helpers.clearConsole()
