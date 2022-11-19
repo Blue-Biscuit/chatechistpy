@@ -237,6 +237,76 @@ def learnCommand(args: list[str], passages: list[Passage.Passage]):
             time.sleep(SECS_BETWEEN_TURNS)
             helpers.clearConsole()
 
+def saveCommand(args: list[str], passages: list[Passage.Passage]):
+    """Saves the current passages list to a file."""
+
+    # ALGORITHM:
+    # 1. Check input for errors.
+    # 2. Write to the file the JSON-serialized list.
+
+    # 1. Check input for errors.
+
+    if len(args) == 1:
+        print("Usage: save <path>")
+        print()
+        return
+    elif len(passages) == 0:
+        print("Nothing to save.")
+        print()
+        return
+
+    filepath = args[1]
+    f = None
+
+    try:
+        f = open(filepath, 'w')
+    except:
+        print(f'Error opening "{filepath}" for writing.')
+        print()
+        return
+
+    # 2. Write to the file the JSON-serialized list.
+
+    j = '['
+    for p in passages:
+        j += p.toJSON()
+        j += ','
+    j = j[0:len(j)-1]
+    j += ']'
+
+    f.write(j)
+    f.close()
+
+def loadCommand(args: list[str], passages: list[Passage.Passage]):
+    """Loads a list of passages from a file, and appends them to the current one."""
+
+    # ALGORITHM:
+    # 1. Check args for errors.
+    # 2. Append the contents of the list from the file to the current list.
+
+    # 1. Check args for errors.
+
+    if len(args) == 1:
+        print("Usage: load <path>")
+        print()
+        return
+    
+    filepath = args[1]
+    f = None
+    try:
+        f = open(filepath, 'r')
+    except:
+        print(f'Error opening "{filepath}" for reading.')
+        print()
+        return
+    
+    j = f.read()
+
+    # 2. Append the contents of the list from the file to the current list.
+
+    l = Passage.Passage.fromJSONList(j)
+    for x in l:
+        passages.append(x)
 
 COMMANDS = {
     "new" : {
@@ -254,6 +324,14 @@ COMMANDS = {
     "learn" : {
         "help" : "plays a memorization game with the provided passage.",
         "method" : learnCommand
+    },
+    "save" : {
+        "help" : "saves the current passages list to a file.",
+        "method" : saveCommand
+    },
+    "load" : {
+        "help" : "loads passages from a file.",
+        "method" : loadCommand
     },
     "exit" : {
         "help" : "exits the program.",
@@ -283,3 +361,5 @@ def run(passages: list[Passage.Passage]):
             else:
                 print(f"Unrecognized command \"{commandName}\"")
                 print()
+
+run([])
