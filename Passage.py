@@ -36,7 +36,7 @@ class Passage:
     INPUT_TOO_LONG = -3
     """Compare method return code for len(input) < len(passage)."""
 
-    def compare(self, text) -> tuple[int,int]:
+    def compare(self, text: str) -> tuple[int,int]:
         """Compares the two strings, and returns (word of difference, char of
         difference). Uses the MATCH, INPUT_TOO_SHORT, and INPUT_TOO_LONG
         codes to flag these situations, where either the passed-in passage
