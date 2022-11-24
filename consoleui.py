@@ -486,6 +486,10 @@ COMMANDS = {
         "help" : "lists passages.",
         "method" : listCommand
     },
+    "study" : {
+        "help" : "studies all new commands while updating study statistics.",
+        "method" : studyCommand
+    },
     "learn" : {
         "help" : "plays a memorization game with the provided passage.",
         "method" : learnCommand
