@@ -11,7 +11,7 @@ import StudyStatistics
 
 class Passage:
     """A passage to be memorized."""
-    def __init__(self, title: str, text: str, id: int, tagIDs: list[int], statistics: StudyStatistics = None):
+    def __init__(self, title: str, text: str, id: int, tagIDs: list[int], statistics: StudyStatistics.StudyStatistics = None):
         """Creates a passage to be memorized based on the string."""
         self.title = title
         self.id = id
@@ -107,7 +107,7 @@ class Passage:
     def fromDict(d: dict):
         """Builds a passage from a dictionary."""
 
-        return Passage(d['title'], d['_text'], d['id'], d['tagIDs'])
+        return Passage(d['title'], d['_text'], d['id'], d['tagIDs'], StudyStatistics.StudyStatistics.fromDict(d['statistics']))
     
     def fromJSON(j: str):
         return Passage.fromDict(json.loads(j))
