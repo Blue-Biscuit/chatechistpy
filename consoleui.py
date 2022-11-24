@@ -238,8 +238,13 @@ def learnCommand(args: list[str], passages: list[Passage.Passage]):
             time.sleep(SECS_BETWEEN_TURNS)
             helpers.clearConsole()
 
+ROTE_EXIT_SIGNAL = 0
+ROTE_CORRECT_SIGNAL = 1
+ROTE_INCORRECT_SIGNAL = 2
+ROTE_ERROR_SIGNAL = 3
+
 def roteCommand(args: list[str], passages: list[Passage.Passage]):
-    """Simple command to study a passage by rote typing it."""
+    """Simple command to study a passage by rote typing it. Returns an exit code."""
 
     # ALGORITHM:
     # 1. Input parse. If input wasn't sufficient, error and exit.
@@ -252,13 +257,13 @@ def roteCommand(args: list[str], passages: list[Passage.Passage]):
     if len(args) == 1:
         print("usage: learn <title | id>")
         print()
-        return
+        return ROTE_ERROR_SIGNAL
 
     p = getPassage(passages, args, 1)
     if p == None:
         print(f'Passage "{helpers.joinAfter(args, 1)}" not found')
         print()
-        return
+        return ROTE_ERROR_SIGNAL
 
     helpers.clearConsole()
 
@@ -274,18 +279,23 @@ def roteCommand(args: list[str], passages: list[Passage.Passage]):
         # If 'exit' was input, exit.
         if i.lower() == 'exit':
             print()
-            return
+            return ROTE_EXIT_SIGNAL
 
     # 3. Notify the user whether they correctly reproduced the passage or not.
 
     matchResult = p.compare(i)
 
+    result = ROTE_ERROR_SIGNAL
     print()
     if matchResult[0] == Passage.Passage.MATCH and matchResult[1] == Passage.Passage.MATCH:
         print("Congratulations! That was correct.")
+        result = ROTE_CORRECT_SIGNAL
     else:
         print("Sorry, that was incorrect.")
         print()
+
+        result = ROTE_INCORRECT_SIGNAL
+
         if matchResult[0] == Passage.Passage.INPUT_TOO_SHORT:
             print("The input was too short.")
         elif matchResult[0] == Passage.Passage.INPUT_TOO_LONG:
@@ -299,6 +309,7 @@ def roteCommand(args: list[str], passages: list[Passage.Passage]):
             else:
                 print(f'Input word {matchResult[0]}, "{pI.getWord(matchResult[0])}", character {matchResult[1]}, was incorrect (should have been "{p.getWord(matchResult[0])}")')
     print()
+    return result
 
 def saveCommand(args: list[str], passages: list[Passage.Passage]):
     """Saves the current passages list to a file."""
@@ -399,6 +410,34 @@ def dueCommand(args: list[str], passages: list[Passage.Passage]):
 
     print()
 
+def studyCommand(args: list[str], passages: list[Passage.Passage]):
+    """Studies all due passages, and updates their statistics accordingly."""
+
+    # ALGORITHM:
+    # 1. Loop through the passages list, studying those that are due.
+
+    # 1. Loop through the passages list, studying those that are due.
+    studiedOne = False
+
+    for p in passages:
+        # ALGORITHM:
+        # 1. If a passage has been studied before, "learn" it.
+        # 2. Otherwise, "rote" it.
+        # 3. Update statistics.
+
+        # 1. If a passage has been studied before, "learn" it.
+
+        if p.statistics.studyCount == 0:
+            cmd = {"learn", p.title}
+            learnCommand(cmd, passages)
+
+        # 2. Otherwise, "rote" it.
+
+        else:
+            cmd = {"rote", p.title}
+            roteCommand(cmd, passages)
+
+        # 3. Update statistics.
 
 COMMANDS = {
     "new" : {
