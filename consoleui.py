@@ -431,6 +431,11 @@ def studyCommand(args: list[str], passages: list[Passage.Passage]):
         # 2. Otherwise, "rote" it.
         # 3. Update statistics.
 
+        if not p.statistics.isDue():
+            continue
+        
+        studiedOne = True
+
         correctInARow = p.statistics.correctInARow
 
         # 1. If a passage has been studied before, "learn" it.
@@ -472,6 +477,13 @@ def studyCommand(args: list[str], passages: list[Passage.Passage]):
         p.statistics.correctInARow = correctInARow
         p.statistics.studyCount += 1
         p.statistics.updateDueDate(True)
+
+    if studiedOne:
+        print("Study session complete.")
+        print()
+    else:
+        print("Nothing to study right now.")
+        print()
 
 COMMANDS = {
     "new" : {
