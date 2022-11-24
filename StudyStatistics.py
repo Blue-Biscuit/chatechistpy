@@ -8,6 +8,7 @@
 ################################################################################
 
 import datetime
+import json
 
 class StudyStatistics:
     """A data class which holds statistics about a study passage."""
@@ -46,3 +47,18 @@ class StudyStatistics:
         reproductions in a row. Assumes this value has already been updated."""
 
         return datetime.timedelta(days=int(self.correctInARow * 1.5)) + datetime.date.today()
+    
+    def toJSON(self) -> str:
+        """Creates a JSON string from the StudyStatistics instance."""
+
+        return json.dumps(self, default=lambda o: o.__dict__)
+    
+    def fromDict(d: dict):
+        """Builds a StudyStatistics instance from a dictionary."""
+
+        return StudyStatistics(d["passageID"], d["lastStudied"], d["studyCount"], d["correctInARow"], d["dueDate"])
+    
+    def fromJSON(s: str):
+        """Builds a StudyStatistics instance from a json string."""
+        d = json.loads(s)
+        return StudyStatistics.fromDict(d)
