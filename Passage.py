@@ -115,6 +115,7 @@ class Passage:
         """Builds a passage from a dictionary."""
 
         return Passage(d['title'], d['_text'], d['id'], d['tagIDs'], StudyStatistics.StudyStatistics.fromDict(d['statistics']))
+
     
     def fromJSON(j: str):
         return Passage.fromDict(json.loads(j))
