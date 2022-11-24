@@ -1,0 +1,2 @@
+cp *.py $HOME/bin/
+cp chatechist $HOME/bin/chatechist
