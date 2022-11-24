@@ -436,7 +436,7 @@ def studyCommand(args: list[str], passages: list[Passage.Passage]):
         # 1. If a passage has been studied before, "learn" it.
 
         if p.statistics.studyCount == 0:
-            cmd = {"learn", p.title}
+            cmd = ["learn", p.title]
             sg = learnCommand(cmd, passages)
 
             # If the user sent an exit signal, exit the study command.
@@ -448,7 +448,7 @@ def studyCommand(args: list[str], passages: list[Passage.Passage]):
         # 2. Otherwise, "rote" it.
 
         else:
-            cmd = {"rote", p.title}
+            cmd = ["rote", p.title]
             sg = roteCommand(cmd, passages)
 
             # If the user sent an exit signal, exit the study command.
@@ -458,7 +458,7 @@ def studyCommand(args: list[str], passages: list[Passage.Passage]):
             # If the user was incorrect, relearn.
             if sg == ROTE_INCORRECT_SIGNAL:
                 correctInARow = 0
-                cmd2 = {"learn", p.id}
+                cmd2 = ["learn", p.id]
                 sg = learnCommand(cmd2, passages)
 
                 # If the user sent an exit signal, exit the study command.
