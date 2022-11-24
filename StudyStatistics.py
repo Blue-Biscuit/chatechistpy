@@ -52,3 +52,13 @@ class StudyStatistics:
         """Creates a JSON string from the StudyStatistics instance."""
 
         return json.dumps(self, default=lambda o: o.__dict__)
+    
+    def fromDict(d: dict):
+        """Builds a StudyStatistics instance from a dictionary."""
+
+        return StudyStatistics(d["passageID"], d["lastStudied"], d["studyCount"], d["correctInARow"], d["dueDate"])
+    
+    def fromJSON(s: str):
+        """Builds a StudyStatistics instance from a json string."""
+        d = json.loads(s)
+        return StudyStatistics.fromDict(d)
