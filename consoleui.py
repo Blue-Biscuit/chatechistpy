@@ -409,9 +409,9 @@ def dueCommand(args: list[str], passages: list[Passage.Passage]):
     if fromNow.days == 0:
         parenthetical = 'today'
     elif fromNow.days < 0:
-        parenthetical = f'{fromNow.days * -1} ago'
+        parenthetical = f'{fromNow.days * -1} day{"s" if fromNow.days < -1 else ""} ago'
     else:
-        parenthetical = f'{fromNow.days} from now'
+        parenthetical = f'{fromNow.days} day{"s" if fromNow.days > 1 else ""} from now'
     print(f'{p.statistics.dueDate} ({parenthetical})')
 
     print()
