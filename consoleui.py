@@ -237,6 +237,9 @@ def learnCommand(args: list[str], passages: list[Passage.Passage]):
             time.sleep(SECS_BETWEEN_TURNS)
             helpers.clearConsole()
 
+def roteCommand(args: list[str], passages: list[Passage.Passage]):
+    """Simple command to study a passage by rote typing it."""
+
 def saveCommand(args: list[str], passages: list[Passage.Passage]):
     """Saves the current passages list to a file."""
 
@@ -324,6 +327,10 @@ COMMANDS = {
     "learn" : {
         "help" : "plays a memorization game with the provided passage.",
         "method" : learnCommand
+    },
+    "rote" : {
+        "help" : "tests a provided passage by asking for its content without hints.",
+        "method" : roteCommand
     },
     "save" : {
         "help" : "saves the current passages list to a file.",
