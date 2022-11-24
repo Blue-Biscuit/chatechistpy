@@ -111,6 +111,10 @@ def helpCommand(args: list[str], passages: list[Passage.Passage]):
         print(f"{x}\t\t{COMMANDS[x]['help']}")
     print()
 
+LEARN_EXIT_SIGNAL = 0
+LEARN_OK_SIGNAL = 1
+LEARN_ERROR_SIGNAL = 2
+
 def learnCommand(args: list[str], passages: list[Passage.Passage]):
     """Plays a game with the selected passage."""
 
@@ -128,13 +132,13 @@ def learnCommand(args: list[str], passages: list[Passage.Passage]):
     if len(args) == 1:
         print("usage: learn <title | id>")
         print()
-        return
+        return LEARN_ERROR_SIGNAL
 
     p = getPassage(passages, args, 1)
     if p == None:
         print(f'Passage "{helpers.joinAfter(args, 1)}" not found')
         print()
-        return
+        return LEARN_ERROR_SIGNAL
 
     helpers.clearConsole()
 
@@ -191,8 +195,8 @@ def learnCommand(args: list[str], passages: list[Passage.Passage]):
 
         i = input(">>> ")
 
-        if i == 'exit':
-            break
+        if i.lower() == 'exit':
+            return LEARN_EXIT_SIGNAL
 
         compareResult = p.compare(i)
 
@@ -238,8 +242,15 @@ def learnCommand(args: list[str], passages: list[Passage.Passage]):
             time.sleep(SECS_BETWEEN_TURNS)
             helpers.clearConsole()
 
+    return LEARN_OK_SIGNAL
+
+ROTE_EXIT_SIGNAL = 0
+ROTE_CORRECT_SIGNAL = 1
+ROTE_INCORRECT_SIGNAL = 2
+ROTE_ERROR_SIGNAL = 3
+
 def roteCommand(args: list[str], passages: list[Passage.Passage]):
-    """Simple command to study a passage by rote typing it."""
+    """Simple command to study a passage by rote typing it. Returns an exit code."""
 
     # ALGORITHM:
     # 1. Input parse. If input wasn't sufficient, error and exit.
@@ -252,13 +263,13 @@ def roteCommand(args: list[str], passages: list[Passage.Passage]):
     if len(args) == 1:
         print("usage: learn <title | id>")
         print()
-        return
+        return ROTE_ERROR_SIGNAL
 
     p = getPassage(passages, args, 1)
     if p == None:
         print(f'Passage "{helpers.joinAfter(args, 1)}" not found')
         print()
-        return
+        return ROTE_ERROR_SIGNAL
 
     helpers.clearConsole()
 
@@ -274,18 +285,23 @@ def roteCommand(args: list[str], passages: list[Passage.Passage]):
         # If 'exit' was input, exit.
         if i.lower() == 'exit':
             print()
-            return
+            return ROTE_EXIT_SIGNAL
 
     # 3. Notify the user whether they correctly reproduced the passage or not.
 
     matchResult = p.compare(i)
 
+    result = ROTE_ERROR_SIGNAL
     print()
     if matchResult[0] == Passage.Passage.MATCH and matchResult[1] == Passage.Passage.MATCH:
         print("Congratulations! That was correct.")
+        result = ROTE_CORRECT_SIGNAL
     else:
         print("Sorry, that was incorrect.")
         print()
+
+        result = ROTE_INCORRECT_SIGNAL
+
         if matchResult[0] == Passage.Passage.INPUT_TOO_SHORT:
             print("The input was too short.")
         elif matchResult[0] == Passage.Passage.INPUT_TOO_LONG:
@@ -299,6 +315,7 @@ def roteCommand(args: list[str], passages: list[Passage.Passage]):
             else:
                 print(f'Input word {matchResult[0]}, "{pI.getWord(matchResult[0])}", character {matchResult[1]}, was incorrect (should have been "{p.getWord(matchResult[0])}")')
     print()
+    return result
 
 def saveCommand(args: list[str], passages: list[Passage.Passage]):
     """Saves the current passages list to a file."""
@@ -392,13 +409,81 @@ def dueCommand(args: list[str], passages: list[Passage.Passage]):
     if fromNow.days == 0:
         parenthetical = 'today'
     elif fromNow.days < 0:
-        parenthetical = f'{fromNow.days * -1} ago'
+        parenthetical = f'{fromNow.days * -1} day{"s" if fromNow.days < -1 else ""} ago'
     else:
-        parenthetical = f'{fromNow.days} from now'
+        parenthetical = f'{fromNow.days} day{"s" if fromNow.days > 1 else ""} from now'
     print(f'{p.statistics.dueDate} ({parenthetical})')
 
     print()
 
+def studyCommand(args: list[str], passages: list[Passage.Passage]):
+    """Studies all due passages, and updates their statistics accordingly."""
+
+    # ALGORITHM:
+    # 1. Loop through the passages list, studying those that are due.
+
+    # 1. Loop through the passages list, studying those that are due.
+    studiedOne = False
+
+    for p in passages:
+        # ALGORITHM:
+        # 1. If a passage has been studied before, "learn" it.
+        # 2. Otherwise, "rote" it.
+        # 3. Update statistics.
+
+        if not p.statistics.isDue():
+            continue
+        
+        studiedOne = True
+
+        correctInARow = p.statistics.correctInARow
+
+        # 1. If a passage has been studied before, "learn" it.
+
+        if p.statistics.studyCount == 0:
+            cmd = ["learn", p.title]
+            sg = learnCommand(cmd, passages)
+
+            # If the user sent an exit signal, exit the study command.
+            if sg == LEARN_EXIT_SIGNAL:
+                return
+            else:
+                correctInARow += 1
+
+        # 2. Otherwise, "rote" it.
+
+        else:
+            cmd = ["rote", p.title]
+            sg = roteCommand(cmd, passages)
+
+            # If the user sent an exit signal, exit the study command.
+            if sg == ROTE_EXIT_SIGNAL:
+                return
+            
+            # If the user was incorrect, relearn.
+            if sg == ROTE_INCORRECT_SIGNAL:
+                correctInARow = 0
+                cmd2 = ["learn", p.id]
+                sg = learnCommand(cmd2, passages)
+
+                # If the user sent an exit signal, exit the study command.
+                if sg == LEARN_EXIT_SIGNAL:
+                    return
+                else:
+                    correctInARow += 1
+
+        # 3. Update statistics.
+
+        p.statistics.correctInARow = correctInARow
+        p.statistics.studyCount += 1
+        p.statistics.updateDueDate()
+
+    if studiedOne:
+        print("Study session complete.")
+        print()
+    else:
+        print("Nothing to study right now.")
+        print()
 
 COMMANDS = {
     "new" : {
@@ -412,6 +497,10 @@ COMMANDS = {
     "list" : {
         "help" : "lists passages.",
         "method" : listCommand
+    },
+    "study" : {
+        "help" : "studies all new commands while updating study statistics.",
+        "method" : studyCommand
     },
     "learn" : {
         "help" : "plays a memorization game with the provided passage.",
