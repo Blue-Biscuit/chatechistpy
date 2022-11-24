@@ -7,16 +7,22 @@
 ################################################################################
 
 import json
+import StudyStatistics
 
 class Passage:
     """A passage to be memorized."""
-    def __init__(self, title: str, text: str, id: int, tagIDs: list[int]):
+    def __init__(self, title: str, text: str, id: int, tagIDs: list[int], statistics: StudyStatistics = None):
         """Creates a passage to be memorized based on the string."""
         self.title = title
         self.id = id
         self.tagIDs = tagIDs
         self._text = text
         self._passage = Passage._makePassage(text)
+
+        if statistics == None:
+            self.statistics = StudyStatistics.StudyStatistics(id)
+        else:
+            self.statistics = statistics
 
     def __str__(self):
         return self.text
