@@ -2,6 +2,7 @@ import Passage
 import helpers
 import random
 import time
+import datetime
 
 def getPassage(passages: list[Passage.Passage], args: list[str], selectionArgLoc: int) -> Passage.Passage | None:
     """Gets a passage based on id (if the string is int-parsable) or name."""
@@ -385,7 +386,17 @@ def dueCommand(args: list[str], passages: list[Passage.Passage]):
         print()
         return
     
-    print(p.statistics.dueDate)
+    fromNow = p.statistics.dueDate - datetime.date.today()
+    parenthetical = ''
+
+    if fromNow.days == 0:
+        parenthetical = 'today'
+    elif fromNow.days < 0:
+        parenthetical = f'{fromNow.days * -1} ago'
+    else:
+        parenthetical = f'{fromNow.days} from now'
+    print(f'{p.statistics.dueDate} ({parenthetical})')
+
     print()
 
 
