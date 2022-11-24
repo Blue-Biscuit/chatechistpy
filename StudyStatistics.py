@@ -51,12 +51,21 @@ class StudyStatistics:
     def toJSON(self) -> str:
         """Creates a JSON string from the StudyStatistics instance."""
 
-        return json.dumps(self, default=lambda o: o.__dict__)
+        def json_default(x):
+            if isinstance(x, datetime.date):
+                return {'day':x.day, 'month':x.month, 'year':x.year}
+            else:
+                return x.__dict__
+
+        return json.dumps(self, default=lambda o: json_default(o))
     
     def fromDict(d: dict):
         """Builds a StudyStatistics instance from a dictionary."""
 
-        return StudyStatistics(d["passageID"], d["lastStudied"], d["studyCount"], d["correctInARow"], d["dueDate"])
+        def dateFromDict(d):
+            return datetime.date(d['year'], d['month'], d['day'])
+
+        return StudyStatistics(d["passageID"], dateFromDict(d["lastStudied"]), d["studyCount"], d["correctInARow"], dateFromDict(d["dueDate"]))
     
     def fromJSON(s: str):
         """Builds a StudyStatistics instance from a json string."""

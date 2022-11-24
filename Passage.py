@@ -7,16 +7,23 @@
 ################################################################################
 
 import json
+import StudyStatistics
+import datetime
 
 class Passage:
     """A passage to be memorized."""
-    def __init__(self, title: str, text: str, id: int, tagIDs: list[int]):
+    def __init__(self, title: str, text: str, id: int, tagIDs: list[int], statistics: StudyStatistics.StudyStatistics = None):
         """Creates a passage to be memorized based on the string."""
         self.title = title
         self.id = id
         self.tagIDs = tagIDs
         self._text = text
         self._passage = Passage._makePassage(text)
+
+        if statistics == None:
+            self.statistics = StudyStatistics.StudyStatistics(id)
+        else:
+            self.statistics = statistics
 
     def __str__(self):
         return self.text
@@ -96,12 +103,18 @@ class Passage:
     def toJSON(self) -> str:
         """Creates a JSON string from the Passage instance."""
 
-        return json.dumps(self, default=lambda o: o.__dict__)
+        def json_default(x):
+            if isinstance(x, datetime.date):
+                return {'day':x.day, 'month':x.month, 'year':x.year}
+            else:
+                return x.__dict__
+
+        return json.dumps(self, default=lambda o: json_default(o))
     
     def fromDict(d: dict):
         """Builds a passage from a dictionary."""
 
-        return Passage(d['title'], d['_text'], d['id'], d['tagIDs'])
+        return Passage(d['title'], d['_text'], d['id'], d['tagIDs'], StudyStatistics.StudyStatistics.fromDict(d['statistics']))
     
     def fromJSON(j: str):
         return Passage.fromDict(json.loads(j))
