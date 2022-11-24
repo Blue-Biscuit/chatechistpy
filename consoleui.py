@@ -240,6 +240,66 @@ def learnCommand(args: list[str], passages: list[Passage.Passage]):
 def roteCommand(args: list[str], passages: list[Passage.Passage]):
     """Simple command to study a passage by rote typing it."""
 
+    # ALGORITHM:
+    # 1. Input parse. If input wasn't sufficient, error and exit.
+    # 2. Ask the user to reproduce the passage.
+    # 3. Notify the user whether they correctly reproduced the passage or not.
+
+    # 1. Input parse. If input wasn't sufficient, error and exit.
+
+    # If no args are given, print usage data.
+    if len(args) == 1:
+        print("usage: learn <title | id>")
+        print()
+        return
+
+    p = getPassage(passages, args, 1)
+    if p == None:
+        print(f'Passage "{helpers.joinAfter(args, 1)}" not found')
+        print()
+        return
+
+    helpers.clearConsole()
+
+    # 2. Ask the user to reproduce the passage.
+
+    print(f'Reproduce "{p.title}"')
+    print()
+
+    i = ''
+    while i == '':
+        i = input(">>> ").strip()
+
+        # If 'exit' was input, exit.
+        if i.lower() == 'exit':
+            return
+
+    # 3. Notify the user whether they correctly reproduced the passage or not.
+
+    matchResult = p.compare(i)
+
+    print()
+    if matchResult[0] == Passage.Passage.MATCH and matchResult[1] == Passage.Passage.MATCH:
+        print("Congratulations! That was correct.")
+    else:
+        print("Sorry, that was incorrect.")
+        print()
+        if matchResult[0] == Passage.Passage.INPUT_TOO_SHORT:
+            print("The input was too short.")
+        elif matchResult[0] == Passage.Passage.INPUT_TOO_LONG:
+            print("The input was too long.")
+        else:
+            pI = Passage.Passage("", i, -1, [])
+            if matchResult[1] == Passage.Passage.INPUT_TOO_SHORT:
+                print(f'Input word {matchResult[0]}, "{pI.getWord(matchResult[0])}", was too \
+                    short (should have been "{p.getWord(matchResult[0])}")')
+            elif matchResult[1] == Passage.Passage.INPUT_TOO_LONG:
+                print(f'Input word {matchResult[0]}, "{pI.getWord(matchResult[0])}", \
+                    was too long (should have been "{p.getWord(matchResult[0])}")')
+            else:
+                print(f'Input word {matchResult[0]}, "{pI.getWord(matchResult[0])}", character \
+                    {matchResult[1]}, was incorrect (should have been "{p.getWord(matchResult[0])}"')
+
 def saveCommand(args: list[str], passages: list[Passage.Passage]):
     """Saves the current passages list to a file."""
 
