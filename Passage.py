@@ -8,6 +8,7 @@
 
 import json
 import StudyStatistics
+import datetime
 
 class Passage:
     """A passage to be memorized."""
@@ -102,7 +103,13 @@ class Passage:
     def toJSON(self) -> str:
         """Creates a JSON string from the Passage instance."""
 
-        return json.dumps(self, default=lambda o: o.__dict__)
+        def json_default(x):
+            if isinstance(x, datetime.date):
+                return {'day':x.day, 'month':x.month, 'year':x.year}
+            else:
+                return x.__dict__
+
+        return json.dumps(self, default=lambda o: json_default(o))
     
     def fromDict(d: dict):
         """Builds a passage from a dictionary."""
