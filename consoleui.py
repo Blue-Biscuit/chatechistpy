@@ -370,6 +370,25 @@ def loadCommand(args: list[str], passages: list[Passage.Passage]):
     for x in l:
         passages.append(x)
 
+def dueCommand(args: list[str], passages: list[Passage.Passage]):
+    """Prints the due date of the selected passage."""
+
+    # If no args are given, print usage data.
+    if len(args) == 1:
+        print("usage: due <title | id>")
+        print()
+        return
+
+    p = getPassage(passages, args, 1)
+    if p == None:
+        print(f'Passage "{helpers.joinAfter(args, 1)}" not found')
+        print()
+        return
+    
+    print(p.statistics.dueDate)
+    print()
+
+
 COMMANDS = {
     "new" : {
         "help" : "creates a new passage.",
@@ -390,6 +409,10 @@ COMMANDS = {
     "rote" : {
         "help" : "tests a provided passage by asking for its content without hints.",
         "method" : roteCommand
+    },
+    "due" : {
+        "help" : "prints the due date of a passage.",
+        "method" : dueCommand
     },
     "save" : {
         "help" : "saves the current passages list to a file.",
