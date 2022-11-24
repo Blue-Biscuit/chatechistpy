@@ -476,7 +476,7 @@ def studyCommand(args: list[str], passages: list[Passage.Passage]):
 
         p.statistics.correctInARow = correctInARow
         p.statistics.studyCount += 1
-        p.statistics.updateDueDate(True)
+        p.statistics.updateDueDate()
 
     if studiedOne:
         print("Study session complete.")

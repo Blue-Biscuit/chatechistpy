@@ -33,13 +33,8 @@ class StudyStatistics:
         """True if the passage is due today."""
         return self.dueDate == datetime.date.today()
     
-    def updateDueDate(self, correct: bool):
+    def updateDueDate(self):
         """Updates the due date after the passage has been studied."""
-        if correct:
-            self.correctInARow += 1
-        else:
-            self.correctInARow = 0
-        
         self.dueDate = self._getNextDueDate()
     
     def _getNextDueDate(self) -> datetime.date:
