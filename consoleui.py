@@ -2,6 +2,7 @@ import Passage
 import helpers
 import random
 import time
+import datetime
 
 def getPassage(passages: list[Passage.Passage], args: list[str], selectionArgLoc: int) -> Passage.Passage | None:
     """Gets a passage based on id (if the string is int-parsable) or name."""
@@ -370,6 +371,35 @@ def loadCommand(args: list[str], passages: list[Passage.Passage]):
     for x in l:
         passages.append(x)
 
+def dueCommand(args: list[str], passages: list[Passage.Passage]):
+    """Prints the due date of the selected passage."""
+
+    # If no args are given, print usage data.
+    if len(args) == 1:
+        print("usage: due <title | id>")
+        print()
+        return
+
+    p = getPassage(passages, args, 1)
+    if p == None:
+        print(f'Passage "{helpers.joinAfter(args, 1)}" not found')
+        print()
+        return
+    
+    fromNow = p.statistics.dueDate - datetime.date.today()
+    parenthetical = ''
+
+    if fromNow.days == 0:
+        parenthetical = 'today'
+    elif fromNow.days < 0:
+        parenthetical = f'{fromNow.days * -1} ago'
+    else:
+        parenthetical = f'{fromNow.days} from now'
+    print(f'{p.statistics.dueDate} ({parenthetical})')
+
+    print()
+
+
 COMMANDS = {
     "new" : {
         "help" : "creates a new passage.",
@@ -390,6 +420,10 @@ COMMANDS = {
     "rote" : {
         "help" : "tests a provided passage by asking for its content without hints.",
         "method" : roteCommand
+    },
+    "due" : {
+        "help" : "prints the due date of a passage.",
+        "method" : dueCommand
     },
     "save" : {
         "help" : "saves the current passages list to a file.",
