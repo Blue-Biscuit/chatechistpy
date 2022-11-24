@@ -12,20 +12,20 @@ import datetime
 class StudyStatistics:
     """A data class which holds statistics about a study passage."""
 
-    def __init__(self, passageID: int):
+    def __init__(self, passageID: int, lastStudied = datetime.date.min, studyCount = 0, correctInARow = 0, dueDate = datetime.date.today()):
         self.passageID = passageID
         """The ID of the passage which this object tracks."""
         
-        self.lastStudied = datetime.date.min
+        self.lastStudied = lastStudied
         """The last time this passage was studied."""
 
-        self.studyCount = 0
+        self.studyCount = studyCount
         """The number of times this passage has been studied."""
 
-        self.correctInARow = 0
+        self.correctInARow = correctInARow
         """The number of times this passage has been reproduced correctly in a row."""
 
-        self.dueDate = datetime.date.today()
+        self.dueDate = dueDate
         '''This passage\'s "due date," or the next time it should be studied.'''
     
     def isDue(self) -> bool:
