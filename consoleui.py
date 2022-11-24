@@ -111,6 +111,10 @@ def helpCommand(args: list[str], passages: list[Passage.Passage]):
         print(f"{x}\t\t{COMMANDS[x]['help']}")
     print()
 
+LEARN_EXIT_SIGNAL = 0
+LEARN_OK_SIGNAL = 1
+LEARN_ERROR_SIGNAL = 2
+
 def learnCommand(args: list[str], passages: list[Passage.Passage]):
     """Plays a game with the selected passage."""
 
@@ -128,13 +132,13 @@ def learnCommand(args: list[str], passages: list[Passage.Passage]):
     if len(args) == 1:
         print("usage: learn <title | id>")
         print()
-        return
+        return LEARN_ERROR_SIGNAL
 
     p = getPassage(passages, args, 1)
     if p == None:
         print(f'Passage "{helpers.joinAfter(args, 1)}" not found')
         print()
-        return
+        return LEARN_ERROR_SIGNAL
 
     helpers.clearConsole()
 
@@ -191,8 +195,8 @@ def learnCommand(args: list[str], passages: list[Passage.Passage]):
 
         i = input(">>> ")
 
-        if i == 'exit':
-            break
+        if i.lower() == 'exit':
+            return LEARN_EXIT_SIGNAL
 
         compareResult = p.compare(i)
 
@@ -237,6 +241,8 @@ def learnCommand(args: list[str], passages: list[Passage.Passage]):
 
             time.sleep(SECS_BETWEEN_TURNS)
             helpers.clearConsole()
+
+    return LEARN_OK_SIGNAL
 
 ROTE_EXIT_SIGNAL = 0
 ROTE_CORRECT_SIGNAL = 1
@@ -425,19 +431,47 @@ def studyCommand(args: list[str], passages: list[Passage.Passage]):
         # 2. Otherwise, "rote" it.
         # 3. Update statistics.
 
+        correctInARow = p.statistics.correctInARow
+
         # 1. If a passage has been studied before, "learn" it.
 
         if p.statistics.studyCount == 0:
             cmd = {"learn", p.title}
-            learnCommand(cmd, passages)
+            sg = learnCommand(cmd, passages)
+
+            # If the user sent an exit signal, exit the study command.
+            if sg == LEARN_EXIT_SIGNAL:
+                return
+            else:
+                correctInARow += 1
 
         # 2. Otherwise, "rote" it.
 
         else:
             cmd = {"rote", p.title}
-            roteCommand(cmd, passages)
+            sg = roteCommand(cmd, passages)
+
+            # If the user sent an exit signal, exit the study command.
+            if sg == ROTE_EXIT_SIGNAL:
+                return
+            
+            # If the user was incorrect, relearn.
+            if sg == ROTE_INCORRECT_SIGNAL:
+                correctInARow = 0
+                cmd2 = {"learn", p.id}
+                sg = learnCommand(cmd2, passages)
+
+                # If the user sent an exit signal, exit the study command.
+                if sg == LEARN_EXIT_SIGNAL:
+                    return
+                else:
+                    correctInARow += 1
 
         # 3. Update statistics.
+
+        p.statistics.correctInARow = correctInARow
+        p.statistics.studyCount += 1
+        p.statistics.updateDueDate(True)
 
 COMMANDS = {
     "new" : {
